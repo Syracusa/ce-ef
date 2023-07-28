@@ -17,6 +17,7 @@ const createWindow = (): void => {
       nodeIntegration: true,
       contextIsolation: false,
     },
+    autoHideMenuBar: true,
   });
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);

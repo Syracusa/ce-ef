@@ -1,7 +1,4 @@
 import './index.css';
+import { CesiumScene } from './cesium-scene/cesium-scene';
 
-import { Viewer, Terrain } from 'cesium';
-
-new Viewer('cesiumContainer', {
-    terrain: Terrain.fromWorldTerrain(),
-});
+new CesiumScene();
