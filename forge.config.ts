@@ -27,9 +27,10 @@ const config: ForgeConfig = {
             html: './src/index.html',
             js: './src/renderer.ts',
             name: 'main_window',
-            preload: {
-              js: './src/preload.ts',
-            },
+
+            /* preload script is not used at all for now. but without 
+              this line the program will not run */
+            preload: { js: './src/preload.ts' },
           },
         ],
         nodeIntegration: true,
