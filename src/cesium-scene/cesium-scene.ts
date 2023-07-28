@@ -14,6 +14,7 @@ export class CesiumScene {
             CesiumProviderHelper.getEillipsoidProviderViewModel(),
             CesiumProviderHelper.getArcGisTerrainProviderViewModel()
         ],
+        fullscreenButton: false,
         baseLayerPicker: true,
         geocoder: false,
     });
@@ -24,32 +25,45 @@ export class CesiumScene {
     private readonly clockViewModel = this.viewer.clockViewModel;
     private readonly timeline = this.viewer.timeline;
 
+    private readonly creditElem =
+        document.getElementsByClassName("cesium-widget-credits")[0] as HTMLElement;
+    private readonly animationContainerElem =
+        document.getElementsByClassName("cesium-viewer-animationContainer")[0] as HTMLElement;
+    private readonly timelineContainerElem =
+        document.getElementsByClassName("cesium-viewer-timelineContainer")[0] as HTMLElement;
+
+
+    private readonly defaultCameraViewOption = {
+        /* Camera GPS Position */
+        destination: Cartesian3.fromDegrees(127.6771, 36.2766, 1390.0),
+        /* Camera Angle */
+        orientation: {
+            heading: Math.toRadians(30.59),
+            pitch: Math.toRadians(-24.61),
+            roll: Math.toRadians(0.001)
+        }
+    }
+
     constructor() {
         this.init();
         this.cameraPositionLoggingStart();
-        this.camera.setView({
-            /* Camera GPS Position */
-            destination: Cartesian3.fromDegrees(127.6771, 36.2766, 1390.0),
-            /* Camera Angle */
-            orientation: {
-                heading: Math.toRadians(30.59),
-                pitch: Math.toRadians(-24.61),
-                roll: Math.toRadians(0.001)
-            }
-        });
+        this.camera.setView(this.defaultCameraViewOption);
     }
 
     private init() {
-        const creditElem =
-            document.getElementsByClassName("cesium-widget-credits")[0];
-        const animationContainerElem =
-            document.getElementsByClassName("cesium-viewer-animationContainer")[0];
-        const timelineContainerElem =
-            document.getElementsByClassName("cesium-viewer-timelineContainer")[0];
+        this.creditElem.style.visibility = "hidden";
+        this.animationContainerElem.style.visibility = "hidden";
+        this.timelineContainerElem.style.visibility = "hidden";
 
-        (creditElem as HTMLElement).style.visibility = "hidden";
-        (animationContainerElem as HTMLElement).style.visibility = "hidden";
-        (timelineContainerElem as HTMLElement).style.visibility = "hidden";
+        this.overrideHomeButtonAction();
+    }
+
+    private overrideHomeButtonAction() {
+        this.viewer.homeButton.viewModel.command.beforeExecute.addEventListener(
+            (e) => {
+                e.cancel = true;
+                this.camera.flyTo(this.defaultCameraViewOption);
+            });
     }
 
     private cameraPositionLoggingStart() {
