@@ -1,5 +1,5 @@
 import { ArcGISTiledElevationTerrainProvider, BingMapsImageryProvider, EllipsoidTerrainProvider, OpenStreetMapImageryProvider, ProviderViewModel, TileMapServiceImageryProvider, buildModuleUrl } from "cesium";
-import { ARCGIS_API_KEY, BING_API_KEY } from "./private-key";
+import { ARCGIS_API_KEY, BING_API_KEY } from "../../private-key";
 
 export class CesiumProviderHelper {
     static localOsmImageryProviderUrl = 'http://localhost:8080/tile/';
@@ -28,7 +28,7 @@ export class CesiumProviderHelper {
             tooltip: 'Bing Maps aerial imagery with labels from bing.com',
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            creationFunction: async function () {
+            creationFunction: function () {
                 return BingMapsImageryProvider.fromUrl(
                     'https://dev.virtualearth.net', {
                     key: BING_API_KEY
