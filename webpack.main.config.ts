@@ -2,9 +2,6 @@ import type { Configuration } from 'webpack';
 
 import { rules } from './webpack.rules';
 
-import * as path from 'path';
-
-const cesiumSource = 'node_modules/cesium/Source';
 export const mainConfig: Configuration = {
   /**
    * This is the main entry point for your application, it's the first file
@@ -16,9 +13,6 @@ export const mainConfig: Configuration = {
     rules,
   },
   resolve: {
-    alias: {
-      cesium: path.resolve(__dirname, cesiumSource)
-    },
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
   },
 };

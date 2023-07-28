@@ -21,7 +21,9 @@ export const rendererConfig: Configuration = {
     alias: {
       cesium: path.resolve(__dirname, cesiumSource)
     },
-    mainFiles: ['Cesium'],
+    /* When importing from an npm package, this option will 
+       determine which files in its node_modules are checked. */
+    mainFiles: ['cesium'],
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
   },
 };
