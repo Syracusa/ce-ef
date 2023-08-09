@@ -27,6 +27,12 @@ export class Position {
         }
     }
 
+    public clone() {
+        return new Position({
+            degreePos: this.degreePos
+        });
+    }
+
     public updateFromCartesian3(cartesian3: Cartesian3) {
         this.cartesianPos = cartesian3;
         this.cartographicPos = this.cesiumScene.globe.ellipsoid.cartesianToCartographic(cartesian3);
@@ -34,6 +40,7 @@ export class Position {
             Math.toDegrees(this.cartographicPos.longitude),
             Math.toDegrees(this.cartographicPos.latitude),
             this.cartographicPos.height];
+        return this;
     }
 
     public updateFromCartographic(cartographicPos: Cartographic) {
@@ -43,6 +50,7 @@ export class Position {
             Math.toDegrees(cartographicPos.longitude),
             Math.toDegrees(cartographicPos.latitude),
             cartographicPos.height];
+        return this;
     }
 
     public updateFromDegrees(degreePos: Array<number>) {
@@ -50,5 +58,12 @@ export class Position {
         this.degreePos = degreePos;
         this.cartesianPos = Cartesian3.fromDegrees(degreePos[0], degreePos[1], degreePos[2]);
         this.cartographicPos = this.cesiumScene.globe.ellipsoid.cartesianToCartographic(this.cartesianPos);
+        return this;
+    }
+
+    public updateHeight(height: number) {
+        this.cartographicPos.height = height;
+        this.updateFromCartographic(this.cartographicPos);
+        return this;
     }
 }

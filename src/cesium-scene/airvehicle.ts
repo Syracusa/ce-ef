@@ -1,6 +1,7 @@
 import {
     Transforms, HeadingPitchRoll, LabelStyle, 
-    VerticalOrigin, Cartesian2, Entity
+    VerticalOrigin, Cartesian2, Entity,
+    Color, PolylineGlowMaterialProperty
 } from 'cesium';
 import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
@@ -50,6 +51,8 @@ export class Airvehicle {
             HeadingPitchRoll.fromDegrees(this.heading, 0, 0)
         );
 
+        const heightZeroPos = this.position.clone().updateHeight(0);
+
         this.entity = this.cesiumScene.viewer.entities.add({
             name: "AirVehicle",
             position: this.position.cartesianPos,
@@ -69,6 +72,15 @@ export class Airvehicle {
                 outlineWidth: 1,
                 verticalOrigin: VerticalOrigin.BOTTOM,
                 pixelOffset: new Cartesian2(0, -15),
+            },
+            polyline: {
+                positions: [this.position.cartesianPos, heightZeroPos.cartesianPos],
+                width: 1,
+                material: new PolylineGlowMaterialProperty({
+                    glowPower: 0.1,
+                    color: Color.YELLOW
+                })
+
             }
         });
     }
