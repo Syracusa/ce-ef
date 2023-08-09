@@ -1,11 +1,23 @@
-
 import { Viewer, Math, Cartesian3 } from 'cesium';
 import { CesiumProviderHelper } from './provider-helper';
-
+import { Airvehicle } from './airvehicle';
+import { Position } from './position';
 export class CesiumScene {
+    private static instance: CesiumScene;
+
+    static getInstance() {
+        console.log(CesiumScene.instance);
+        if (!CesiumScene.instance) {
+            console.log("CesiumScene is created");
+            CesiumScene.instance = new CesiumScene();
+            console.log(CesiumScene.instance);
+        }
+        return CesiumScene.instance;
+    }
+
     public LOGGING_CAMERA_POSITION = false;
 
-    private readonly viewer = new Viewer("cesiumContainer", {
+    public readonly viewer = new Viewer("cesiumContainer", {
         imageryProviderViewModels: [
             CesiumProviderHelper.getLocalOSMProviderViewModel(),
             CesiumProviderHelper.getBingMapProviderViewModel()
@@ -19,11 +31,11 @@ export class CesiumScene {
         geocoder: false,
     });
 
-    private readonly scene = this.viewer.scene;
-    private readonly camera = this.viewer.camera;
-    private readonly globe = this.viewer.scene.globe;
-    private readonly clockViewModel = this.viewer.clockViewModel;
-    private readonly timeline = this.viewer.timeline;
+    public readonly scene = this.viewer.scene;
+    public readonly camera = this.viewer.camera;
+    public readonly globe = this.viewer.scene.globe;
+    public readonly clockViewModel = this.viewer.clockViewModel;
+    public readonly timeline = this.viewer.timeline;
 
     private readonly creditElem =
         document.getElementsByClassName("cesium-widget-credits")[0] as HTMLElement;
@@ -45,6 +57,7 @@ export class CesiumScene {
     }
 
     constructor() {
+        console.log('CesiumScene constructor');
         this.init();
         this.cameraPositionLoggingStart();
         this.camera.setView(this.defaultCameraViewOption);
