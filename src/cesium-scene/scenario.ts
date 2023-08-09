@@ -1,6 +1,6 @@
 import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
-import { AirvehicleManager } from './arivehicle-manager';
+import { AirvehicleManager } from './airvehicle-manager';
 
 export class Scenario {
     constructor() {
