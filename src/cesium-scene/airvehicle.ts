@@ -6,7 +6,7 @@ import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
 import DroneModelUri from '../static/Drone.glb';
 
-interface AirvehicleOptions {
+export interface AirvehicleOptions {
     name?: string;
     position?: Position;
     heading?: number;

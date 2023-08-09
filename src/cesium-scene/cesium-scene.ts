@@ -1,7 +1,6 @@
 import { Viewer, Math, Cartesian3 } from 'cesium';
 import { CesiumProviderHelper } from './provider-helper';
-import { Airvehicle } from './airvehicle';
-import { Position } from './position';
+
 export class CesiumScene {
     private static instance: CesiumScene;
 

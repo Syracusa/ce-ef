@@ -1,4 +1,11 @@
-import { ArcGISTiledElevationTerrainProvider, BingMapsImageryProvider, EllipsoidTerrainProvider, OpenStreetMapImageryProvider, ProviderViewModel, TileMapServiceImageryProvider, buildModuleUrl } from "cesium";
+import {
+    ArcGISTiledElevationTerrainProvider,
+    BingMapsImageryProvider,
+    EllipsoidTerrainProvider,
+    OpenStreetMapImageryProvider,
+    ProviderViewModel,
+    buildModuleUrl
+} from "cesium";
 import { ARCGIS_API_KEY, BING_API_KEY } from "../../private-key";
 
 export class CesiumProviderHelper {

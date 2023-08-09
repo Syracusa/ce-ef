@@ -1,14 +1,23 @@
 import { CesiumScene } from './cesium-scene';
-import { Airvehicle } from './airvehicle';
 import { Position } from './position';
+import { AirvehicleManager } from './arivehicle-manager';
 
 export class Scenario {
     constructor() {
         CesiumScene.getInstance();
-        new Airvehicle({
-            name: "AirVehicle",
+        const avm = AirvehicleManager.getInstance();
+
+        avm.addAirvehicle({
+            name: "Node0",
             position: new Position({
-                degreePos: [127.6771, 36.2766, 1000.0]
+                degreePos: [127.6771, 36.2766, 300.0]
+            }),
+            heading: 0
+        });
+        avm.addAirvehicle({
+            name: "Node1",
+            position: new Position({
+                degreePos: [127.6671, 36.2866, 400.0]
             }),
             heading: 0
         });
