@@ -80,7 +80,6 @@ export class Airvehicle {
                     glowPower: 0.1,
                     color: Color.YELLOW
                 })
-
             }
         });
     }

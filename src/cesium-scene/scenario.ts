@@ -1,11 +1,14 @@
 import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
 import { AirvehicleManager } from './airvehicle-manager';
+import { SimpleGui } from './simple-gui';
 
 export class Scenario {
     constructor() {
         CesiumScene.getInstance();
+        SimpleGui.getInstance();
         const avm = AirvehicleManager.getInstance();
+
 
         avm.addAirvehicle({
             name: "Node0",
