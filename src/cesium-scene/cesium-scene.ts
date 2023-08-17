@@ -1,4 +1,4 @@
-import { Viewer, Math, Cartesian3 } from 'cesium';
+import { Viewer, Math, Cartesian3, JulianDate } from 'cesium';
 import { CesiumProviderHelper } from './provider-helper';
 
 export class CesiumScene {
@@ -64,8 +64,8 @@ export class CesiumScene {
 
     private init() {
         this.creditElem.style.visibility = "hidden";
-        this.animationContainerElem.style.visibility = "hidden";
-        this.timelineContainerElem.style.visibility = "hidden";
+        // this.animationContainerElem.style.visibility = "hidden";
+        // this.timelineContainerElem.style.visibility = "hidden";
 
         this.overrideHomeButtonAction();
     }
@@ -97,6 +97,32 @@ export class CesiumScene {
             'Cam longitude : ' + camPosCart.longitude * 180 / Math.PI,
             'Cam latitude : ' + camPosCart.latitude * 180 / Math.PI,
             'Cam height : ' + camPosCart.height
+        );
+    }
+
+    public setView(gps: number[], hpr: number[]) {
+        this.camera.setView({
+            destination: Cartesian3.fromDegrees(gps[0], gps[1], gps[2]),
+            orientation: {
+                heading: Math.toRadians(hpr[0]),
+                pitch: Math.toRadians(hpr[1]),
+                roll: Math.toRadians(hpr[2])
+            }
+        });
+    }
+
+    public setTime(time: string) {
+        const clock = this.clockViewModel.clock;
+        // clock.startTime = JulianDate.fromIso8601("2013-12-25");
+        clock.currentTime = JulianDate.fromIso8601(time);
+        // clock.stopTime = JulianDate.fromIso8601("2013-12-26");
+    }
+
+    public setTimeRange(start: string, end: string) {
+        const timeline = this.timeline;
+        timeline.zoomTo(
+            JulianDate.fromIso8601(start),
+            JulianDate.fromIso8601(end)
         );
     }
 }

@@ -1,3 +1,4 @@
+import { ScenarioConfig } from "./scenario";
 
 export class SimpleGui {
     private static instance: SimpleGui;
@@ -7,6 +8,8 @@ export class SimpleGui {
         SimpleGui.instance = new SimpleGui();
         return SimpleGui.instance;
     }
+
+    public scenarioLoadCallback: (scenario: ScenarioConfig) => void;
 
     constructor() {
         this.init();
@@ -33,7 +36,7 @@ export class SimpleGui {
             input.onchange = () => {
                 const files = Array.from(input.files);
                 files[0].text().then(text => {
-                    console.log(JSON.parse(text));
+                    this.scenarioLoadCallback(JSON.parse(text));
                 });
             };
             input.click();

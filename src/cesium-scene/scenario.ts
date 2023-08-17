@@ -3,25 +3,70 @@ import { Position } from './position';
 import { AirvehicleManager } from './airvehicle-manager';
 import { SimpleGui } from './simple-gui';
 
+export interface ScenarioConfig {
+    camera: {
+        gps: number[];
+        hpr: number[];
+    },
+    start: string,
+    end: string,
+    nodes: [
+        {
+            name: string,
+            positions: [
+                {
+                    time: string,
+                    gps: number[],
+                }
+            ]
+        }
+    ]
+}
+
 export class Scenario {
     constructor() {
         CesiumScene.getInstance();
-        SimpleGui.getInstance();
+        const gui = SimpleGui.getInstance();
+
+        gui.scenarioLoadCallback = (scenario: ScenarioConfig) => {
+            this.loadScenario(scenario);
+        };
+    }
+
+    loadScenario(scenario: ScenarioConfig) {
+        const cscene = CesiumScene.getInstance();
         const avm = AirvehicleManager.getInstance();
 
-        avm.addAirvehicle({
-            name: "Node0",
-            position: new Position({
-                degreePos: [127.6771, 36.2766, 300.0]
-            }),
-            heading: 0
-        });
-        avm.addAirvehicle({
-            name: "Node1",
-            position: new Position({
-                degreePos: [127.6671, 36.2866, 400.0]
-            }),
-            heading: 0
+        cscene.setView(scenario.camera.gps, scenario.camera.hpr);
+
+        cscene.setTime(scenario.start);
+        cscene.setTimeRange(scenario.start, scenario.end);
+
+        scenario.nodes.forEach((node) => {
+            console.log(node);
+
+            if (node.positions.length == 1) {
+                avm.addAirvehicle({
+                    name: node.name,
+                    position: new Position({
+                        degreePos: node.positions[0].gps
+                    })
+                });
+            } else {
+                const timedPosArr = node.positions.map((pos) => {
+                    return {
+                        time: pos.time,
+                        position: new Position({
+                            degreePos: pos.gps
+                        })
+                    };
+                });
+                avm.addAirvehicle({
+                    name: node.name,
+                    timedPositions: timedPosArr
+                });
+            }
         });
     }
 }
+

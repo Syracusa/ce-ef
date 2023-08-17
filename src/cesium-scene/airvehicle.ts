@@ -1,21 +1,27 @@
 import {
-    Transforms, HeadingPitchRoll, LabelStyle, 
+    Transforms, HeadingPitchRoll, LabelStyle,
     VerticalOrigin, Cartesian2, Entity,
-    Color, PolylineGlowMaterialProperty
+    Color, PolylineGlowMaterialProperty, Cartesian3, SampledPositionProperty, JulianDate, VelocityOrientationProperty
 } from 'cesium';
 import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
 import DroneModelUri from '../static/Drone.glb';
 
+export interface TimedPosition {
+    time: string;
+    position: Position;
+}
+
 export interface AirvehicleOptions {
     name?: string;
     position?: Position;
+    timedPositions?: TimedPosition[];
     heading?: number;
 }
 
 export class Airvehicle {
     private readonly cesiumScene = CesiumScene.getInstance();
-    public position: Position;
+    public position: Position | TimedPosition[];
     public heading: number;
     public name: string;
     public entity: Entity;
@@ -24,10 +30,11 @@ export class Airvehicle {
         console.log('Airvehicle constructor');
         if (options.position) {
             this.position = options.position;
+        } else if (options.timedPositions) {
+            this.position = options.timedPositions;
         } else {
-            this.position = new Position({
-                degreePos: [127.6771, 36.2766, 1390.0]
-            });
+            console.log("Airvehicle constructor: position is not defined");
+            return null;
         }
 
         if (options.heading) {
@@ -46,23 +53,37 @@ export class Airvehicle {
     }
 
     private drawDrone() {
-        const orientation = Transforms.headingPitchRollQuaternion(
-            this.position.cartesianPos,
-            HeadingPitchRoll.fromDegrees(this.heading, 0, 0)
-        );
-
-        const heightZeroPos = this.position.clone().updateHeight(0);
+        let position: Cartesian3 | SampledPositionProperty;
+        let orientation;
+        if (this.position instanceof Position) {
+            position = this.position.cartesianPos;
+            orientation = Transforms.headingPitchRollQuaternion(
+                position,
+                HeadingPitchRoll.fromDegrees(this.heading, 0, 0)
+            );
+        } else {
+            const posprop = new SampledPositionProperty();
+            this.position.forEach((timedPos) => {
+                const time = JulianDate.fromIso8601(timedPos.time);
+                const pos = timedPos.position.cartesianPos;
+                posprop.addSample(time, pos);
+            });
+            position = posprop;
+            orientation = new VelocityOrientationProperty(posprop);
+        }
+        
+        console.log(position, orientation);
 
         this.entity = this.cesiumScene.viewer.entities.add({
             name: "AirVehicle",
-            position: this.position.cartesianPos,
+            position: position,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             orientation: orientation,
             model: {
                 uri: DroneModelUri,
                 scale: 15,
-                minimumPixelSize : 80,
+                minimumPixelSize: 80,
             },
             label: {
                 text: this.name,
@@ -71,16 +92,16 @@ export class Airvehicle {
                 showBackground: true,
                 outlineWidth: 1,
                 verticalOrigin: VerticalOrigin.BOTTOM,
-                pixelOffset: new Cartesian2(0, -15),
+                pixelOffset: new Cartesian2(0, -30),
             },
-            polyline: {
-                positions: [this.position.cartesianPos, heightZeroPos.cartesianPos],
-                width: 1,
-                material: new PolylineGlowMaterialProperty({
-                    glowPower: 0.1,
-                    color: Color.YELLOW
-                })
-            }
+            // polyline: {
+            //     positions: [this.position.cartesianPos, heightZeroPos.cartesianPos],
+            //     width: 1,
+            //     material: new PolylineGlowMaterialProperty({
+            //         glowPower: 0.1,
+            //         color: Color.YELLOW
+            //     })
+            // }
         });
     }
 }

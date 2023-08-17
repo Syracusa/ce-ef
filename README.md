@@ -1,10 +1,4 @@
 # TODOs
-+ Scenario Time Control
-
-+ Scenario Based Moving Drone
-
-+ Read Scenario from File
- 
 + Link indicator line
   + Polyline
 
