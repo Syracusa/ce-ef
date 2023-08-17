@@ -9,7 +9,6 @@ export class Scenario {
         SimpleGui.getInstance();
         const avm = AirvehicleManager.getInstance();
 
-
         avm.addAirvehicle({
             name: "Node0",
             position: new Position({
