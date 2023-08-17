@@ -1,7 +1,9 @@
 import {
     Transforms, HeadingPitchRoll, LabelStyle,
     VerticalOrigin, Cartesian2, Entity,
-    Color, PolylineGlowMaterialProperty, Cartesian3, SampledPositionProperty, JulianDate, VelocityOrientationProperty
+    Color, PolylineGlowMaterialProperty, Cartesian3,
+     SampledPositionProperty, JulianDate, 
+     VelocityOrientationProperty
 } from 'cesium';
 import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
@@ -94,14 +96,16 @@ export class Airvehicle {
                 verticalOrigin: VerticalOrigin.BOTTOM,
                 pixelOffset: new Cartesian2(0, -30),
             },
-            // polyline: {
-            //     positions: [this.position.cartesianPos, heightZeroPos.cartesianPos],
-            //     width: 1,
-            //     material: new PolylineGlowMaterialProperty({
-            //         glowPower: 0.1,
-            //         color: Color.YELLOW
-            //     })
-            // }
+            /* TODO
+            polyline: {
+                positions: [this.position.cartesianPos, heightZeroPos.cartesianPos],
+                width: 1,
+                material: new PolylineGlowMaterialProperty({
+                    glowPower: 0.1,
+                    color: Color.YELLOW
+                })
+            }
+            */
         });
     }
 }

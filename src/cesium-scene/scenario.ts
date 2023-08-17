@@ -2,6 +2,7 @@ import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
 import { AirvehicleManager } from './airvehicle-manager';
 import { SimpleGui } from './simple-gui';
+import { BackendConnection } from './backend-connection';
 
 export interface ScenarioConfig {
     camera: {
@@ -27,6 +28,8 @@ export class Scenario {
     constructor() {
         CesiumScene.getInstance();
         const gui = SimpleGui.getInstance();
+        const backendConnection = new BackendConnection();
+        backendConnection.sendStart(2);
 
         gui.scenarioLoadCallback = (scenario: ScenarioConfig) => {
             this.loadScenario(scenario);

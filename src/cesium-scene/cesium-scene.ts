@@ -113,9 +113,7 @@ export class CesiumScene {
 
     public setTime(time: string) {
         const clock = this.clockViewModel.clock;
-        // clock.startTime = JulianDate.fromIso8601("2013-12-25");
         clock.currentTime = JulianDate.fromIso8601(time);
-        // clock.stopTime = JulianDate.fromIso8601("2013-12-26");
     }
 
     public setTimeRange(start: string, end: string) {
