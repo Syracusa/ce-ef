@@ -15,6 +15,15 @@ export interface RouteMsg {
 }
 
 export class BackendConnection {
+    private static instance: BackendConnection;
+
+    static getInstance() {
+        console.log(BackendConnection.instance);
+        if (!BackendConnection.instance) 
+            BackendConnection.instance = new BackendConnection();
+        return BackendConnection.instance;
+    }
+
     private readonly jsonIo = new JsonIoClient();
     public trxMsgHandler: (msg: TRxMsg) => void = (msg) => {
         console.log('No TRx handler', msg);
@@ -23,15 +32,19 @@ export class BackendConnection {
         console.log('No Route handler', msg);
     };
 
+    public isConnected = false;
+
     constructor() {
         this.jsonIo.onJsonRecv = (json) => {
             this.handleMsg(json);
         };
         this.jsonIo.onConnect = () => {
             console.log('Backend connected');
+            this.isConnected = true;
         };
         this.jsonIo.onClose = () => {
             console.log('Backend disconnected');
+            this.isConnected = false;
         };
 
         this.jsonIo.start();
@@ -64,12 +77,18 @@ export class BackendConnection {
         });
     }
 
+    public sendStop() {
+        this.jsonIo.sendJsonTcp({
+            type: "Stop"
+        });
+    }
+
     private async startHeartbeat() {
         // eslint-disable-next-line no-constant-condition
         while (true) {
             await new Promise(resolve => setTimeout(resolve, 1000));
             this.jsonIo.sendJsonTcp({
-                type: "heartbeat"
+                type: "Status"
             });
         }
     }

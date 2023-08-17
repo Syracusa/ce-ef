@@ -25,31 +25,28 @@ export interface ScenarioConfig {
 }
 
 export class Scenario {
+    private readonly backendConnection = BackendConnection.getInstance();
+    private readonly cesiumScene = CesiumScene.getInstance();
+    private readonly airvehicleManager = AirvehicleManager.getInstance();
+
     constructor() {
         CesiumScene.getInstance();
         const gui = SimpleGui.getInstance();
-        const backendConnection = new BackendConnection();
-        backendConnection.sendStart(2);
 
         gui.scenarioLoadCallback = (scenario: ScenarioConfig) => {
             this.loadScenario(scenario);
         };
     }
 
-    loadScenario(scenario: ScenarioConfig) {
-        const cscene = CesiumScene.getInstance();
-        const avm = AirvehicleManager.getInstance();
+    private loadScenario(scenario: ScenarioConfig) {
+        this.cesiumScene.setView(scenario.camera.gps, scenario.camera.hpr);
 
-        cscene.setView(scenario.camera.gps, scenario.camera.hpr);
-
-        cscene.setTime(scenario.start);
-        cscene.setTimeRange(scenario.start, scenario.end);
+        this.cesiumScene.setTime(scenario.start);
+        this.cesiumScene.setTimeRange(scenario.start, scenario.end);
 
         scenario.nodes.forEach((node) => {
-            console.log(node);
-
             if (node.positions.length == 1) {
-                avm.addAirvehicle({
+                this.airvehicleManager.addAirvehicle({
                     name: node.name,
                     position: new Position({
                         degreePos: node.positions[0].gps
@@ -64,12 +61,23 @@ export class Scenario {
                         })
                     };
                 });
-                avm.addAirvehicle({
+                this.airvehicleManager.addAirvehicle({
                     name: node.name,
                     timedPositions: timedPosArr
                 });
             }
         });
+
+        this.startSimulation(scenario.nodes.length);
+    }
+
+    private async startSimulation(nodeNum: number) {
+        while (!this.backendConnection.isConnected) {
+            console.log('Backend is not connected');
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        this.backendConnection.sendStart(nodeNum);
     }
 }
 
