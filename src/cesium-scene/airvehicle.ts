@@ -1,9 +1,8 @@
 import {
     Transforms, HeadingPitchRoll, LabelStyle,
-    VerticalOrigin, Cartesian2, Entity,
-    Color, PolylineGlowMaterialProperty, Cartesian3,
-     SampledPositionProperty, JulianDate, 
-     VelocityOrientationProperty
+    VerticalOrigin, Cartesian2, Entity, Cartesian3,
+    SampledPositionProperty, JulianDate,
+    VelocityOrientationProperty
 } from 'cesium';
 import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
@@ -73,7 +72,7 @@ export class Airvehicle {
             position = posprop;
             orientation = new VelocityOrientationProperty(posprop);
         }
-        
+
         console.log(position, orientation);
 
         this.entity = this.cesiumScene.viewer.entities.add({
@@ -107,5 +106,17 @@ export class Airvehicle {
             }
             */
         });
+    }
+
+    public getCurrentPosition(): Position {
+        if (this.position instanceof Position) {
+            return this.position;
+        } else {
+            const cartPos = this.entity.position.getValue(this.cesiumScene.clock.currentTime);
+            if (cartPos)
+                return new Position({ cartesianPos: cartPos });
+            else
+                return null;
+        }
     }
 }

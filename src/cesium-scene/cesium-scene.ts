@@ -5,7 +5,6 @@ export class CesiumScene {
     private static instance: CesiumScene;
 
     static getInstance() {
-        console.log(CesiumScene.instance);
         if (!CesiumScene.instance) {
             console.log("CesiumScene is created");
             CesiumScene.instance = new CesiumScene();
@@ -15,6 +14,7 @@ export class CesiumScene {
     }
 
     public LOGGING_CAMERA_POSITION = false;
+    static readonly USE_SCENARIO_CONTROL_WIDGET = true;
 
     public readonly viewer = new Viewer("cesiumContainer", {
         imageryProviderViewModels: [
@@ -34,15 +34,8 @@ export class CesiumScene {
     public readonly camera = this.viewer.camera;
     public readonly globe = this.viewer.scene.globe;
     public readonly clockViewModel = this.viewer.clockViewModel;
+    public readonly clock = this.clockViewModel.clock;
     public readonly timeline = this.viewer.timeline;
-
-    private readonly creditElem =
-        document.getElementsByClassName("cesium-widget-credits")[0] as HTMLElement;
-    private readonly animationContainerElem =
-        document.getElementsByClassName("cesium-viewer-animationContainer")[0] as HTMLElement;
-    private readonly timelineContainerElem =
-        document.getElementsByClassName("cesium-viewer-timelineContainer")[0] as HTMLElement;
-
 
     private readonly defaultCameraViewOption = {
         /* Camera GPS Position */
@@ -63,9 +56,19 @@ export class CesiumScene {
     }
 
     private init() {
-        this.creditElem.style.visibility = "hidden";
-        // this.animationContainerElem.style.visibility = "hidden";
-        // this.timelineContainerElem.style.visibility = "hidden";
+        const creditElem =
+        document.getElementsByClassName("cesium-widget-credits")[0] as HTMLElement;
+        const animationContainerElem =
+        document.getElementsByClassName("cesium-viewer-animationContainer")[0] as HTMLElement;
+        const timelineContainerElem =
+        document.getElementsByClassName("cesium-viewer-timelineContainer")[0] as HTMLElement;
+        
+        creditElem.style.visibility = "hidden";
+
+        if (!CesiumScene.USE_SCENARIO_CONTROL_WIDGET) {
+            animationContainerElem.style.visibility = "hidden";
+            timelineContainerElem.style.visibility = "hidden";
+        }
 
         this.overrideHomeButtonAction();
     }

@@ -3,6 +3,7 @@ import { Position } from './position';
 import { AirvehicleManager } from './airvehicle-manager';
 import { SimpleGui } from './simple-gui';
 import { BackendConnection } from './backend-connection';
+import { LinkIndicatorManager } from './link-indicator-manager';
 
 export interface ScenarioConfig {
     camera: {
@@ -28,6 +29,7 @@ export class Scenario {
     private readonly backendConnection = BackendConnection.getInstance();
     private readonly cesiumScene = CesiumScene.getInstance();
     private readonly airvehicleManager = AirvehicleManager.getInstance();
+    private readonly linkIndicatorManager = LinkIndicatorManager.getInstance();
 
     constructor() {
         CesiumScene.getInstance();
