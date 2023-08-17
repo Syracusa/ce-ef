@@ -33,7 +33,7 @@ export class SimpleGui {
             input.onchange = () => {
                 const files = Array.from(input.files);
                 files[0].text().then(text => {
-                    console.log(text);
+                    console.log(JSON.parse(text));
                 });
             };
             input.click();
