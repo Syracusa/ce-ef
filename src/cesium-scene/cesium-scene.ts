@@ -1,4 +1,7 @@
-import { Viewer, Math, Cartesian3, JulianDate } from 'cesium';
+import {
+    Viewer, Math, Cartesian3, JulianDate,
+    ScreenSpaceEventHandler, ScreenSpaceEventType
+} from 'cesium';
 import { CesiumProviderHelper } from './provider-helper';
 
 export class CesiumScene {
@@ -53,16 +56,51 @@ export class CesiumScene {
         this.init();
         this.cameraPositionLoggingStart();
         this.camera.setView(this.defaultCameraViewOption);
+        this.createMousePositionIndicatorLabel();
+    }
+
+    private createMousePositionIndicatorLabel() {
+        const label = document.createElement("div");
+        label.style.position = "absolute";
+        label.style.right = "0px";
+        label.style.width = "202px";
+        label.style.bottom = "26px";
+        label.style.zIndex = "1";
+        label.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        label.style.color = "white";
+        label.style.padding = "0px";
+        label.style.fontSize = "10px";
+        label.style.textAlign = "center";
+        label.innerHTML = "경도: N/A 위도: N/A";
+        
+        document.body.appendChild(label);
+
+        new ScreenSpaceEventHandler(this.viewer.canvas)
+            .setInputAction((movement: ScreenSpaceEventHandler.MotionEvent) => {
+                const cartesian = this.viewer.camera.pickEllipsoid(
+                    new Cartesian3(
+                        movement.endPosition.x,
+                        movement.endPosition.y),
+                    this.viewer.scene.globe.ellipsoid);
+
+                if (!cartesian)
+                    return;
+
+                const cartographic = this.globe.ellipsoid.cartesianToCartographic(cartesian);
+                label.innerHTML =
+                    "경도: " + Math.toDegrees(cartographic.longitude).toFixed(6) +
+                    " 위도: " + Math.toDegrees(cartographic.latitude).toFixed(6);
+            }, ScreenSpaceEventType.MOUSE_MOVE);
     }
 
     private init() {
         const creditElem =
-        document.getElementsByClassName("cesium-widget-credits")[0] as HTMLElement;
+            document.getElementsByClassName("cesium-widget-credits")[0] as HTMLElement;
         const animationContainerElem =
-        document.getElementsByClassName("cesium-viewer-animationContainer")[0] as HTMLElement;
+            document.getElementsByClassName("cesium-viewer-animationContainer")[0] as HTMLElement;
         const timelineContainerElem =
-        document.getElementsByClassName("cesium-viewer-timelineContainer")[0] as HTMLElement;
-        
+            document.getElementsByClassName("cesium-viewer-timelineContainer")[0] as HTMLElement;
+
         creditElem.style.visibility = "hidden";
 
         if (!CesiumScene.USE_SCENARIO_CONTROL_WIDGET) {
