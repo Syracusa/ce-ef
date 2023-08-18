@@ -54,7 +54,6 @@ export class Position {
     }
 
     public updateFromDegrees(degreePos: Array<number>) {
-        console.log('Update from degree');
         this.degreePos = degreePos;
         this.cartesianPos = Cartesian3.fromDegrees(degreePos[0], degreePos[1], degreePos[2]);
         this.cartographicPos = this.cesiumScene.globe.ellipsoid.cartesianToCartographic(this.cartesianPos);
