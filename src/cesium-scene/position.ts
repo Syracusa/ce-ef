@@ -66,4 +66,8 @@ export class Position {
         this.updateFromCartographic(this.cartographicPos);
         return this;
     }
+
+    public distanceTo(position: Position) {
+        return Cartesian3.distance(this.cartesianPos, position.cartesianPos);
+    }
 }
