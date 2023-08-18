@@ -1,5 +1,6 @@
 import net from 'net';
 import stream from 'node:stream';
+import { AirvehicleManager } from './airvehicle-manager';
 
 export interface TRxMsg {
     node: number;
@@ -15,8 +16,8 @@ export interface RouteMsg {
 }
 
 export class BackendConnection {
+    /* Singleton */
     private static instance: BackendConnection;
-
     static getInstance() {
         console.log(BackendConnection.instance);
         if (!BackendConnection.instance) 
@@ -24,6 +25,7 @@ export class BackendConnection {
         return BackendConnection.instance;
     }
 
+    private readonly airvehicleManager = AirvehicleManager.getInstance();
     private readonly jsonIo = new JsonIoClient();
     public trxMsgHandler: (msg: TRxMsg) => void = (msg) => {
         console.log('No TRx handler', msg);
@@ -49,6 +51,7 @@ export class BackendConnection {
 
         this.jsonIo.start();
         this.startHeartbeat();
+        this.startPeriodicNodeLinkStateSend();
     }
 
     private handleMsg(msg: object) {
@@ -83,6 +86,36 @@ export class BackendConnection {
         });
     }
 
+    private async startPeriodicNodeLinkStateSend() {
+        setInterval(() => {
+            this.sendNodeLinkState();
+        }, 1000);
+    }
+
+    private sendNodeLinkState() {
+        console.log('sendNodeLinkState');
+        const nodenum = this.airvehicleManager.avList.length;
+        const nodeLinkInfo: number[][] = [];
+        for (let i = 0; i < nodenum; i++) {
+            const oneNodeLinkInfo: number[] = [];
+            for (let j = i + 1; j < nodenum; j++) {
+                const pos1 = this.airvehicleManager.avList[i].getCurrentPosition();
+                const pos2 = this.airvehicleManager.avList[j].getCurrentPosition();
+                
+                let distance = 10000 * 1000 * 1000; // 10000km default
+                if (pos1 && pos2)
+                    distance = pos1.distanceTo(pos2);
+                oneNodeLinkInfo.push(parseFloat(distance.toFixed(2)));
+            }
+            nodeLinkInfo.push(oneNodeLinkInfo);
+        }
+        const json = {
+            type: "LinkInfo",
+            links: nodeLinkInfo
+        }
+        this.jsonIo.sendJsonTcp(json);
+    }
+
     private async startHeartbeat() {
         // eslint-disable-next-line no-constant-condition
         while (true) {
@@ -92,7 +125,6 @@ export class BackendConnection {
             });
         }
     }
-    
 }
 
 class JsonIoClient {
