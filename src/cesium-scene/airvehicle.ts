@@ -21,14 +21,23 @@ export interface AirvehicleOptions {
     position?: Position;
     timedPositions?: TimedPosition[];
     heading?: number;
+    index?: number;
+}
+
+export interface RouteEntry {
+    hopCount: number;
+    path: number[];
 }
 
 export class Airvehicle {
     private readonly cesiumScene = CesiumScene.getInstance();
     public position: Position | TimedPosition[];
-    public heading: number;
-    public name: string;
     public entity: Entity;
+    public name = "AirVehicle";
+    public heading = 0;
+    public index = 0;
+
+    routingTable: RouteEntry[];
 
     constructor(options: AirvehicleOptions) {
         console.log('Airvehicle constructor');
@@ -41,18 +50,15 @@ export class Airvehicle {
             return null;
         }
 
-        if (options.heading) {
+        if (options.heading)
             this.heading = options.heading;
-        } else {
-            this.heading = 0;
-        }
 
-        if (options.name) {
+        if (options.name) 
             this.name = options.name;
-        } else {
-            this.name = "AirVehicle";
-        }
 
+        if (options.index)
+            this.index = options.index;
+        
         this.drawDrone();
     }
 

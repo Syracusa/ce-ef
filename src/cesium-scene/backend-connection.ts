@@ -31,7 +31,10 @@ export class BackendConnection {
         console.log('No TRx handler', msg);
     };
     public routeMsgHandler: (msg: RouteMsg) => void = (msg) => {
-        console.log('No Route handler', msg);
+        const node = this.airvehicleManager.avList[msg.node];
+        const routeEntry = node.routingTable[msg.target];
+        routeEntry.hopCount = msg.hopcount;
+        routeEntry.path = msg.path;
     };
 
     public isConnected = false;
