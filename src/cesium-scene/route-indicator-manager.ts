@@ -19,15 +19,18 @@ class RouteIndicator {
             polyline: {
                 positions:
                     new CallbackProperty(() => {
+                        /* Print route only if the originator is picked */
+                        if (this.originator.entity.id != this.cesiumScene.pickedId)
+                            return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
+
                         const rtt = this.originator.routingTable;
                         if (!rtt)
                             return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
 
                         const route = rtt[this.target.index];
-                        if (route.path.length < 2){
+                        if (route.path.length < 1)
                             return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
-                        }
-
+                        
                         const path = [this.originator.getCurrentPosition().cartesianPos, ...route.path.map((val) => {
                             const intermediateAv = this.airvehicleManager.avList[val];
                             return intermediateAv.getCurrentPosition().cartesianPos;
@@ -45,10 +48,7 @@ class RouteIndicator {
                         return linePosArr;
                     }, false),
                 width: 10,
-                material: new PolylineGlowMaterialProperty({
-                    glowPower: 0.1,
-                    color: Color.fromRandom({ alpha: 0.2 })
-                })
+                material: Color.fromRandom({ alpha: 0.8 })
             }
         });
     }

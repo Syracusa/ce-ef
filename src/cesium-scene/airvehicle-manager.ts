@@ -22,6 +22,7 @@ export class AirvehicleManager {
         for (let i = 0; i < this.avList.length - 1; i++){
             this.linkIndicatorManager.addLink(airvehicle, this.avList[i]);
             this.routeIndicatorManager.addRouteIndicator(airvehicle, this.avList[i]);
+            this.routeIndicatorManager.addRouteIndicator(this.avList[i], airvehicle);
         }
     }
 }

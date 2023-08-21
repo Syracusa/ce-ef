@@ -40,6 +40,8 @@ export class CesiumScene {
     public readonly clock = this.clockViewModel.clock;
     public readonly timeline = this.viewer.timeline;
 
+    public pickedId = 'N/A';
+
     private readonly defaultCameraViewOption = {
         /* Camera GPS Position */
         destination: Cartesian3.fromDegrees(127.6771, 36.2766, 1390.0),
@@ -72,7 +74,7 @@ export class CesiumScene {
         label.style.fontSize = "10px";
         label.style.textAlign = "center";
         label.innerHTML = "경도: N/A 위도: N/A";
-        
+
         document.body.appendChild(label);
 
         new ScreenSpaceEventHandler(this.viewer.canvas)
@@ -109,6 +111,13 @@ export class CesiumScene {
         }
 
         this.overrideHomeButtonAction();
+
+        new ScreenSpaceEventHandler(this.viewer.canvas)
+            .setInputAction((movement: ScreenSpaceEventHandler.PositionedEvent) => {
+                const picked = this.scene.pick(movement.position);
+                if (picked)
+                    this.pickedId = picked.id._id;
+            }, ScreenSpaceEventType.LEFT_CLICK);
     }
 
     private overrideHomeButtonAction() {
