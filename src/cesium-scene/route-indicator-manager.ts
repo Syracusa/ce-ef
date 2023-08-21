@@ -28,8 +28,16 @@ class RouteIndicator {
                             return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
 
                         const route = rtt[this.target.index];
-                        if (route.path.length < 1)
+                        if (!route || route.path.length < 1){
+                            console.log("RouteIndicator: route is not defined", route, rtt);
                             return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
+                        }
+
+                        /* Draw only if the target is an edge node */
+                        if (!this.originator.edgeNodeIdxList.includes(this.target.index)){
+                            console.log("RouteIndicator: target is not an edge node", this.target.edgeNodeIdxList);
+                            return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
+                        }
                         
                         const path = [this.originator.getCurrentPosition().cartesianPos, ...route.path.map((val) => {
                             const intermediateAv = this.airvehicleManager.avList[val];

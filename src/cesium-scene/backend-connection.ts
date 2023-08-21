@@ -34,10 +34,12 @@ export class BackendConnection {
         console.log(msg);
         const node = this.airvehicleManager.avList[msg.node];
         
-        const routeEntry = node.routingTable[msg.target];
-        routeEntry.hopCount = msg.hopcount;
-        routeEntry.path = msg.path;
+        const routeEntry = {
+            hopCount: msg.hopcount,
+            path: msg.path
+        }; 
         
+        node.updateRoutingTable(msg.target, routeEntry);
     };
 
     public isConnected = false;

@@ -10,6 +10,7 @@ import {
 import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
 import DroneModelUri from '../static/Drone.glb';
+import { AirvehicleManager } from './airvehicle-manager';
 
 export interface TimedPosition {
     time: string;
@@ -31,6 +32,7 @@ export interface RouteEntry {
 
 export class Airvehicle {
     private readonly cesiumScene = CesiumScene.getInstance();
+    private readonly airvehicleManager = AirvehicleManager.getInstance();
     public position: Position | TimedPosition[];
     public entity: Entity;
     public name = "AirVehicle";
@@ -38,6 +40,7 @@ export class Airvehicle {
     public index = 0;
 
     public routingTable: RouteEntry[] = [];
+    public edgeNodeIdxList: number[] = [];
 
     constructor(options: AirvehicleOptions) {
         console.log('Airvehicle constructor');
@@ -141,5 +144,31 @@ export class Airvehicle {
             else
                 return null;
         }
+    }
+
+    public updateRoutingTable(targetIdx: number, path: RouteEntry) {
+        this.routingTable[targetIdx] = path;
+        this.edgeNodeIdxList = this.getEdgeNodeIdxList(this.index);
+        console.log(this.edgeNodeIdxList);
+    }
+
+    private getEdgeNodeIdxList(rootNodeIdx: number): number[] {
+        const isIdxRelay = new Array(this.airvehicleManager.avList.length).fill(false);
+        const edgeNodeIdxList: number[] = [];
+        const node = this.airvehicleManager.avList[rootNodeIdx];
+        for (let i = 0; i < node.routingTable.length; i++) {
+            const routeEntry = node.routingTable[i];
+            for (let j = 0; j < routeEntry.hopCount - 1; j++) {
+                const relayIdx = routeEntry.path[j];
+                isIdxRelay[relayIdx] = true;
+            }
+        }
+
+        for (let i = 0; i < isIdxRelay.length; i++) {
+            if (!isIdxRelay[i])
+                edgeNodeIdxList.push(i);
+        }
+
+        return edgeNodeIdxList;
     }
 }
