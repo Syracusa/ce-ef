@@ -1,4 +1,4 @@
-import { CallbackProperty, Cartesian3, CatmullRomSpline, Color, PolylineGlowMaterialProperty } from "cesium";
+import { CallbackProperty, Cartesian3, CatmullRomSpline, Color, PolylineArrowMaterialProperty, PolylineGlowMaterialProperty } from "cesium";
 import { Airvehicle } from "./airvehicle";
 import { AirvehicleManager } from "./airvehicle-manager";
 import { CesiumScene } from "./cesium-scene";
@@ -42,13 +42,13 @@ class RouteIndicator {
                         });
                 
                         const linePosArr = [];
-                        for (let i = 0.0; i < path.length - 1; i += 0.1)
+                        for (let i = 0.0; i < path.length - 1.05; i += 0.1)
                             linePosArr.push(spline.evaluate(i));
 
                         return linePosArr;
                     }, false),
                 width: 10,
-                material: Color.fromRandom({ alpha: 0.8 })
+                material: new PolylineArrowMaterialProperty(Color.fromRandom({ alpha: 0.8 }))
             }
         });
     }
