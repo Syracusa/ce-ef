@@ -37,7 +37,7 @@ export class Airvehicle {
     public heading = 0;
     public index = 0;
 
-    routingTable: RouteEntry[];
+    public routingTable: RouteEntry[] = [];
 
     constructor(options: AirvehicleOptions) {
         console.log('Airvehicle constructor');
@@ -115,8 +115,12 @@ export class Airvehicle {
                 positions:
                     new CallbackProperty(() => {
                         const pos1 = this.getCurrentPosition();
-                        const pos2 = pos1.clone().updateHeight(0);
-                        return [pos1.cartesianPos, pos2.cartesianPos];
+                        if (pos1){
+                            const pos2 = pos1.clone().updateHeight(0);
+                            return [pos1.cartesianPos, pos2.cartesianPos];
+                        } else {
+                            return [new Cartesian3(1, 0, 0), new Cartesian3(1, 0, 0)];
+                        }
                     }, false),
                 width: 2,
                 material: new PolylineGlowMaterialProperty({

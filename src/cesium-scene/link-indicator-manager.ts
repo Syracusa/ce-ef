@@ -46,8 +46,8 @@ class LinkIndicator {
     }
 }
 export class LinkIndicatorManager {
+    /* Singleton */
     private static instance: LinkIndicatorManager;
-
     static getInstance() {
         if (!LinkIndicatorManager.instance)
             LinkIndicatorManager.instance = new LinkIndicatorManager();

@@ -20,7 +20,7 @@ export class BackendConnection {
     private static instance: BackendConnection;
     static getInstance() {
         console.log(BackendConnection.instance);
-        if (!BackendConnection.instance) 
+        if (!BackendConnection.instance)
             BackendConnection.instance = new BackendConnection();
         return BackendConnection.instance;
     }
@@ -28,13 +28,16 @@ export class BackendConnection {
     private readonly airvehicleManager = AirvehicleManager.getInstance();
     private readonly jsonIo = new JsonIoClient();
     public trxMsgHandler: (msg: TRxMsg) => void = (msg) => {
-        console.log('No TRx handler', msg);
+        // console.log('No TRx handler', msg);
     };
     public routeMsgHandler: (msg: RouteMsg) => void = (msg) => {
+        console.log(msg);
         const node = this.airvehicleManager.avList[msg.node];
+        
         const routeEntry = node.routingTable[msg.target];
         routeEntry.hopCount = msg.hopcount;
         routeEntry.path = msg.path;
+        
     };
 
     public isConnected = false;
@@ -104,7 +107,7 @@ export class BackendConnection {
             for (let j = i + 1; j < nodenum; j++) {
                 const pos1 = this.airvehicleManager.avList[i].getCurrentPosition();
                 const pos2 = this.airvehicleManager.avList[j].getCurrentPosition();
-                
+
                 let distance = 10000 * 1000 * 1000; // 10000km default
                 if (pos1 && pos2)
                     distance = pos1.distanceTo(pos2);
