@@ -10,12 +10,18 @@ export class SimpleGui {
     }
 
     public scenarioLoadCallback: (scenario: ScenarioConfig) => void;
+    public linkViewToggleCallback: () => void;
 
     constructor() {
         this.init();
     }
 
     private init() {
+        this.makeLoadBtn();
+        this.makeLinkViewToggleBtn();
+    }
+
+    private makeLoadBtn() {
         const button = document.createElement("button");
         button.style.position = "absolute";
         button.style.top = "10px";
@@ -41,6 +47,27 @@ export class SimpleGui {
             };
             input.click();
             input.remove();
+        });
+        document.body.appendChild(button);
+    }
+
+    private makeLinkViewToggleBtn() {
+        const button = document.createElement("button");
+        button.style.position = "absolute";
+        button.style.top = "10px";
+        button.style.left = "120px";
+        button.style.width = "100px";
+        button.style.height = "20px";
+        button.style.zIndex = "1";
+        button.style.backgroundColor = "white";
+        button.style.color = "black";
+        button.style.padding = "0px";
+        button.style.cursor = "pointer";
+        button.style.fontSize = "9px";
+        button.innerHTML = "Link View";
+        button.addEventListener("click", () => {
+            console.log('Toggle Link View');
+            this.linkViewToggleCallback();
         });
         document.body.appendChild(button);
     }

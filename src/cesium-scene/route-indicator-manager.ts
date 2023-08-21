@@ -10,7 +10,8 @@ class RouteIndicator {
     private readonly target: Airvehicle;
 
     private static readonly dummyCart3 = new Cartesian3(1, 1, 1);
-    
+    private static readonly dummyLinePositions = [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
+
     constructor(originator: Airvehicle, target: Airvehicle) {
         this.originator = originator;
         this.target = target;
@@ -21,28 +22,37 @@ class RouteIndicator {
                     new CallbackProperty(() => {
                         /* Print route only if the originator is picked */
                         if (this.originator.entity.id != this.cesiumScene.pickedId)
-                            return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
+                            return RouteIndicator.dummyLinePositions;
 
                         const rtt = this.originator.routingTable;
                         if (!rtt)
-                            return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
+                            return RouteIndicator.dummyLinePositions;
 
                         const route = rtt[this.target.index];
-                        if (!route || route.path.length < 1){
-                            console.log("RouteIndicator: route is not defined", route, rtt);
-                            return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
-                        }
-
-                        /* Draw only if the target is an edge node */
-                        if (!this.originator.edgeNodeIdxList.includes(this.target.index)){
-                            console.log("RouteIndicator: target is not an edge node", this.target.edgeNodeIdxList);
-                            return [RouteIndicator.dummyCart3, RouteIndicator.dummyCart3];
-                        }
+                        if (!route || route.path.length < 1)
+                            return RouteIndicator.dummyLinePositions;
                         
-                        const path = [this.originator.getCurrentPosition().cartesianPos, ...route.path.map((val) => {
+                        /* Draw only if the target is an edge node */
+                        if (!this.originator.edgeNodeIdxList.includes(this.target.index))
+                            return RouteIndicator.dummyLinePositions;
+
+                        const originatorPos = this.originator.getCurrentPosition();
+                        if (!originatorPos)
+                            return RouteIndicator.dummyLinePositions;
+
+                        let posfail = false;
+                        const path = [originatorPos.cartesianPos, ...route.path.map((val) => {
                             const intermediateAv = this.airvehicleManager.avList[val];
-                            return intermediateAv.getCurrentPosition().cartesianPos;
+                            const intermediateAvPos = intermediateAv.getCurrentPosition();
+                            if (!intermediateAvPos){
+                                posfail = true;
+                                return RouteIndicator.dummyCart3;
+                            }
+                            return intermediateAvPos.cartesianPos;
                         })];
+
+                        if (posfail)
+                            return RouteIndicator.dummyLinePositions;
 
                         const spline = new CatmullRomSpline({
                             times: path.map((r, idx) => idx),

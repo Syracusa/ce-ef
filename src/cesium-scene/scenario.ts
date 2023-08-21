@@ -38,6 +38,9 @@ export class Scenario {
         gui.scenarioLoadCallback = (scenario: ScenarioConfig) => {
             this.loadScenario(scenario);
         };
+        gui.linkViewToggleCallback = () => {
+            this.linkIndicatorManager.hideView = !this.linkIndicatorManager.hideView;
+        }
     }
 
     private loadScenario(scenario: ScenarioConfig) {

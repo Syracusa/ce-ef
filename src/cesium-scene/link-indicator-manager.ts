@@ -3,6 +3,8 @@ import { CesiumScene } from "./cesium-scene";
 import { Airvehicle } from "./airvehicle";
 
 class LinkIndicator {
+    private readonly linkIndicatorManager = LinkIndicatorManager.getInstance();
+
     public av1: Airvehicle;
     public av2: Airvehicle;
 
@@ -18,6 +20,9 @@ class LinkIndicator {
             polyline: {
                 positions:
                     new CallbackProperty(() => {
+                        if (this.linkIndicatorManager.hideView)
+                            return [LinkIndicator.dummyCart3, LinkIndicator.dummyCart3];
+
                         const pos1 = this.av1.getCurrentPosition();
                         const pos2 = this.av2.getCurrentPosition();
                         if (pos1 && pos2)
@@ -55,6 +60,7 @@ export class LinkIndicatorManager {
     }
 
     private readonly linkList: LinkIndicator[] = [];
+    public hideView = false;
 
     public addLink(av1: Airvehicle, av2: Airvehicle) {
         this.linkList.push(new LinkIndicator(av1, av2));
