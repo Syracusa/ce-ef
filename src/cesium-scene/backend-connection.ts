@@ -94,6 +94,21 @@ export class BackendConnection {
         });
     }
 
+    public sendDummyTrafficControl(options : {
+        senderIdx: number,
+        receiverIdx: number,
+        pktSize?: number,
+        intervalMs?: number
+    }) {
+        this.jsonIo.sendJsonTcp({
+            type: "TrafficControl",
+            sender: options.senderIdx,
+            receiver: options.receiverIdx,
+            pktSize: options.pktSize ?? 1000,
+            intervalMs: options.intervalMs ?? 1000
+        });
+    }
+
     private async startPeriodicNodeLinkStateSend() {
         setInterval(() => {
             this.sendNodeLinkState();

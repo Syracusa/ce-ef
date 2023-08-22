@@ -40,7 +40,7 @@ export class Scenario {
         };
         gui.linkViewToggleCallback = () => {
             this.linkIndicatorManager.hideView = !this.linkIndicatorManager.hideView;
-        }
+        };
     }
 
     private loadScenario(scenario: ScenarioConfig) {
