@@ -62,6 +62,48 @@ export class BackendConnection {
         this.jsonIo.start();
         this.startHeartbeat();
         this.startPeriodicNodeLinkStateSend();
+        this.setTrafficControllerCallbacks();
+    }
+
+    private setTrafficControllerCallbacks() {
+        this.trafficController.createCallback = (confId) => {
+            this.jsonIo.sendJsonTcp({
+                type: "NewDummyTrafficConf",
+                confId: confId
+            });
+        };
+        this.trafficController.deleteCallback = (confId) => {
+            this.jsonIo.sendJsonTcp({
+                type: "DeleteDummyTrafficConf",
+                confId: confId
+            });
+        };
+        this.trafficController.updateCallback = (confId, src, dst, pktsz, interval) => {
+            this.jsonIo.sendJsonTcp({
+                type: "UpdateDummyTrafficConf",
+                confId: confId,
+                sourceNodeId: src,
+                destinationNodeId: dst,
+                packetSize: pktsz,
+                intervalMs: interval
+            });
+        };
+        this.trafficController.startCallback = (confId, src, dst, pktsz, interval) => {
+            this.jsonIo.sendJsonTcp({
+                type: "StartDummyTraffic",
+                confId: confId,
+                sourceNodeId: src,
+                destinationNodeId: dst,
+                packetSize: pktsz,
+                intervalMs: interval
+            });
+        };
+        this.trafficController.stopCallback = (confId) => {
+            this.jsonIo.sendJsonTcp({
+                type: "StopDummyTraffic",
+                confId: confId
+            });
+        };
     }
 
     private handleMsg(msg: object) {
