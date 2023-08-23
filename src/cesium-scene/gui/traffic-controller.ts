@@ -56,6 +56,7 @@ export class TrafficController {
         }
 
         container.appendChild(sideViewToggle);
+        container.style.left = '-237px'; /* Hidden at first */
     }
 
     private createControllerBody(): HTMLDivElement {
