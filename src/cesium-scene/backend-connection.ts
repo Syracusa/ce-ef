@@ -1,6 +1,7 @@
 import net from 'net';
 import stream from 'node:stream';
 import { AirvehicleManager } from './airvehicle-manager';
+import { TrafficController } from './gui/traffic-controller';
 
 export interface TRxMsg {
     node: number;
@@ -26,6 +27,7 @@ export class BackendConnection {
     }
 
     private readonly airvehicleManager = AirvehicleManager.getInstance();
+    private readonly trafficController = TrafficController.getInstance();
     private readonly jsonIo = new JsonIoClient();
     public trxMsgHandler: (msg: TRxMsg) => void = (msg) => {
         // console.log('No TRx handler', msg);

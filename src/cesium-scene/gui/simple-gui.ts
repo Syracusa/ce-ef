@@ -1,4 +1,4 @@
-import { ScenarioConfig } from "./scenario";
+import { ScenarioConfig } from "../scenario";
 
 export class SimpleGui {
     private static instance: SimpleGui;
@@ -24,8 +24,8 @@ export class SimpleGui {
     private makeLoadBtn() {
         const button = document.createElement("button");
         button.style.position = "absolute";
-        button.style.top = "10px";
-        button.style.left = "10px";
+        button.style.top = "45px";
+        button.style.right = "10px";
         button.style.width = "100px";
         button.style.height = "20px";
         button.style.zIndex = "1";
@@ -54,8 +54,8 @@ export class SimpleGui {
     private makeLinkViewToggleBtn() {
         const button = document.createElement("button");
         button.style.position = "absolute";
-        button.style.top = "10px";
-        button.style.left = "120px";
+        button.style.top = "70px";
+        button.style.right = "10px";
         button.style.width = "100px";
         button.style.height = "20px";
         button.style.zIndex = "1";

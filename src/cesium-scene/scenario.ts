@@ -1,7 +1,7 @@
 import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
 import { AirvehicleManager } from './airvehicle-manager';
-import { SimpleGui } from './simple-gui';
+import { SimpleGui } from './gui/simple-gui';
 import { BackendConnection } from './backend-connection';
 import { LinkIndicatorManager } from './link-indicator-manager';
 
