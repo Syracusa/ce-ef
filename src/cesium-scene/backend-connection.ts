@@ -51,11 +51,11 @@ export class BackendConnection {
             this.handleMsg(json);
         };
         this.jsonIo.onConnect = () => {
-            console.log('Backend connected');
+            console.info('Backend connected');
             this.isConnected = true;
         };
         this.jsonIo.onClose = () => {
-            console.log('Backend disconnected');
+            console.info('Backend disconnected');
             this.isConnected = false;
         };
 
@@ -119,7 +119,7 @@ export class BackendConnection {
                     this.routeMsgHandler(msg as RouteMsg);
                     break;
                 default:
-                    console.log("Unknown message type from worker " + typed.type);
+                    console.warn("Unknown message type from worker " + typed.type);
                     break;
             }
         }
@@ -160,7 +160,6 @@ export class BackendConnection {
     }
 
     private sendNodeLinkState() {
-        console.log('sendNodeLinkState');
         const nodenum = this.airvehicleManager.avList.length;
         const nodeLinkInfo: number[][] = [];
         for (let i = 0; i < nodenum; i++) {
@@ -199,13 +198,13 @@ class JsonIoClient {
     streambuf = new stream.PassThrough();
 
     onJsonRecv: (json: object) => void = (d) => {
-        console.log('No JSON handler', d);
+        console.warn('No JSON handler', d);
     };
     onConnect: () => void = () => {
-        console.log('JsonIoClient - Server connected');
+        console.info('JsonIoClient - Server connected');
     };
     onClose: () => void = () => {
-        console.log('JsonIoClient - Server closed');
+        console.info('JsonIoClient - Server closed');
     }
 
     constructor() {
@@ -283,7 +282,7 @@ class TcpClient {
         socket.setTimeout(3000);
 
         socket.on('timeout', () => {
-            console.log('Socket Timeout');
+            console.error('Socket Timeout');
             socket.destroy();
         });
 
@@ -292,11 +291,11 @@ class TcpClient {
         });
 
         socket.on('error', (err) => {
-            console.log('Socket Error: ' + err);
+            console.error('Socket Error: ' + err);
         });
 
         socket.on('close', () => {
-            console.log('Connection closed...');
+            console.warn('Connection closed...');
         });
 
         return socket;
@@ -306,15 +305,19 @@ class TcpClient {
         if (!this.socket.closed)
             this.socket.write(data);
         else
-            console.log('TCP not connected');
+            console.warn('TCP not connected. Message dropped');
     }
 
+    /**
+     * Connect to backend simulation server
+     * Automatically reconnect when disconnected
+     */
     async start() {
         const socket = this.socket;
         const loop = true;
         while (loop) {
             if (socket.closed) {
-                console.log('Try connect...');
+                console.info('Try connect...');
                 socket.removeAllListeners('connect');
                 socket.connect(12123, '127.0.0.1', this.onConnect);
             }
