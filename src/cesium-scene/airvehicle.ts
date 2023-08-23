@@ -11,6 +11,11 @@ import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
 import DroneModelUri from '../static/Drone.glb';
 import { AirvehicleManager } from './airvehicle-manager';
+declare module "cesium" {
+    interface Entity {
+        onClick: () => void;
+    }
+}
 
 export interface TimedPosition {
     time: string;
@@ -56,12 +61,12 @@ export class Airvehicle {
         if (options.heading)
             this.heading = options.heading;
 
-        if (options.name) 
+        if (options.name)
             this.name = options.name;
 
         if (options.index)
             this.index = options.index;
-        
+
         this.drawDrone();
     }
 
@@ -109,6 +114,9 @@ export class Airvehicle {
             }
         });
 
+        this.entity.onClick = () => {
+            console.log("Airvehicle onClick");
+        }
         this.drawPositionIndicator();
     }
 
@@ -118,7 +126,7 @@ export class Airvehicle {
                 positions:
                     new CallbackProperty(() => {
                         const pos1 = this.getCurrentPosition();
-                        if (pos1){
+                        if (pos1) {
                             const pos2 = pos1.clone().updateHeight(0);
                             return [pos1.cartesianPos, pos2.cartesianPos];
                         } else {

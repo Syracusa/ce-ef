@@ -115,8 +115,14 @@ export class CesiumScene {
         new ScreenSpaceEventHandler(this.viewer.canvas)
             .setInputAction((movement: ScreenSpaceEventHandler.PositionedEvent) => {
                 const picked = this.scene.pick(movement.position);
-                if (picked)
+                if (picked) {
                     this.pickedId = picked.id._id;
+                    console.log(picked);
+                    if (Object.prototype.hasOwnProperty.call(picked.id, "onClick")) {
+                        console.log("onClick");
+                        picked.id.onClick();
+                    }
+                }
             }, ScreenSpaceEventType.LEFT_CLICK);
     }
 
