@@ -67,18 +67,21 @@ export class BackendConnection {
 
     private setTrafficControllerCallbacks() {
         this.trafficController.createCallback = (confId) => {
+            console.log("Create callback");
             this.jsonIo.sendJsonTcp({
                 type: "NewDummyTrafficConf",
                 confId: confId
             });
         };
         this.trafficController.deleteCallback = (confId) => {
+            console.log("Delete callback");
             this.jsonIo.sendJsonTcp({
                 type: "DeleteDummyTrafficConf",
                 confId: confId
             });
         };
         this.trafficController.updateCallback = (confId, src, dst, pktsz, interval) => {
+            console.log("Update callback");
             this.jsonIo.sendJsonTcp({
                 type: "UpdateDummyTrafficConf",
                 confId: confId,
@@ -89,6 +92,7 @@ export class BackendConnection {
             });
         };
         this.trafficController.startCallback = (confId, src, dst, pktsz, interval) => {
+            console.log("Start callback");
             this.jsonIo.sendJsonTcp({
                 type: "StartDummyTraffic",
                 confId: confId,
@@ -99,6 +103,7 @@ export class BackendConnection {
             });
         };
         this.trafficController.stopCallback = (confId) => {
+            console.log("Stop callback");
             this.jsonIo.sendJsonTcp({
                 type: "StopDummyTraffic",
                 confId: confId
@@ -137,22 +142,7 @@ export class BackendConnection {
             type: "Stop"
         });
     }
-
-    public sendDummyTrafficControl(options : {
-        senderIdx: number,
-        receiverIdx: number,
-        pktSize?: number,
-        intervalMs?: number
-    }) {
-        this.jsonIo.sendJsonTcp({
-            type: "TrafficControl",
-            sender: options.senderIdx,
-            receiver: options.receiverIdx,
-            pktSize: options.pktSize ?? 1000,
-            intervalMs: options.intervalMs ?? 1000
-        });
-    }
-
+    
     private async startPeriodicNodeLinkStateSend() {
         setInterval(() => {
             this.sendNodeLinkState();
@@ -205,7 +195,7 @@ class JsonIoClient {
     };
     onClose: () => void = () => {
         console.info('JsonIoClient - Server closed');
-    }
+    };
 
     constructor() {
         this.tcpClient.onData = (data) => {
