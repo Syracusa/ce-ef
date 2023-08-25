@@ -1,36 +1,69 @@
+/**
+ * @module gui/traffic-controller
+ */
+
 import {
     createButton, createContainer,
     createFlexContainer, createLabel,
     createSelect, createSubContainer
 } from "./elem-util";
 
+
+/**
+ * TrafficController is a singleton gui class that controls the traffic of the simulation.
+ */
 export class TrafficController {
-    /* Singleton */
+    /** Singleton instance */
     private static instance: TrafficController;
+
+    /**
+     * Singleton getter
+     * @returns Singleton instance of TrafficController
+     */
     static getInstance() {
         if (!TrafficController.instance)
             TrafficController.instance = new TrafficController();
         return TrafficController.instance;
     }
 
-    createCallback = (trafficConfId: number) => { console.log('No create callback', trafficConfId); };
+    /** Callback function that is called when user clicks the new traffic button */
+    createCallback = (trafficConfId: number) => {
+        console.log('No create callback', trafficConfId);
+    };
+
+    /** Callback function that is called when user clicks the start button */
     startCallback = (trafficConfId: number, sender: number, receiver: number, packetSize: number, intervalMs: number) => {
         console.log('No start callback', trafficConfId, sender, receiver, packetSize, intervalMs);
     };
-    stopCallback = (trafficConfId: number) => { console.log('No stop callback', trafficConfId); };
+
+    /** Callback function that is called when user clicks the stop button */
+    stopCallback = (trafficConfId: number) => {
+        console.log('No stop callback', trafficConfId);
+    };
+
+    /** Callback function that is called when user clicks the update button */
     updateCallback = (trafficConfId: number, sender: number, receiver: number, packetSize: number, intervalMs: number) => {
         console.log('No update callback', trafficConfId, sender, receiver, packetSize, intervalMs);
     };
+
+    /** Callback function that is called when user clicks the delete button */
     deleteCallback = (trafficConfId: number) => { console.log('No delete callback', trafficConfId); };
 
+    /** Counter for traffic configuration id. Increment when new traffic configuration is created */
     private trafficConfIdCounter = 0;
 
+    /* Base id string for html select elements */
     static readonly SUB_CONTROLLER_ID_BASE = 'traffic_controller_sub_controller_';
     static readonly SENDER_ID_BASE = 'traffic_controller_sender_';
     static readonly RECEIVER_ID_BASE = 'traffic_controller_receiver_';
     static readonly PACKET_SIZE_ID_BASE = 'traffic_controller_packetSize_';
     static readonly INTERVAL_ID_BASE = 'traffic_controller_interval_';
 
+    /**
+     * Constructor of TrafficController
+     * 
+     * Creates a traffic controller panel and appends it to the document body.
+     */
     constructor() {
         const container = createContainer();
         container.style.display = 'flex';
@@ -59,10 +92,15 @@ export class TrafficController {
         container.style.left = '-237px'; /* Hidden at first */
     }
 
+    /**
+     * Create the traffic controller panel that contains the traffic configuration panels and the new traffic button
+     * 
+     * @returns HTMLDivElement that contains the traffic controller panels
+     */
     private createControllerBody(): HTMLDivElement {
         const controllerContainer = createSubContainer();
         controllerContainer.style.minWidth = '236px';
-        
+
         const subControllerContainer = createSubContainer();
         subControllerContainer.appendChild(this.createSubTrafficController());
         subControllerContainer.appendChild(this.createSubTrafficController());
@@ -79,6 +117,11 @@ export class TrafficController {
         return controllerContainer;
     }
 
+    /**
+     * Create one traffic configuration controller
+     * 
+     * @returns HTMLDivElement that contains one traffic configuration panel
+     */
     private createSubTrafficController(): HTMLDivElement {
         this.trafficConfIdCounter++;
         this.createCallback(this.trafficConfIdCounter);
@@ -99,31 +142,67 @@ export class TrafficController {
         return container;
     }
 
+    /**
+     * Get selected value of the select element with given id
+     * 
+     * @param id HTML select element id
+     * @returns Selected value of the select element
+     */
     private getSelectedValueById(id: string): number {
         const select = document.getElementById(id) as HTMLSelectElement;
         return parseInt(select.options[select.selectedIndex].value);
     }
 
+    /**
+     * Get selected sender id
+     * 
+     * @param trafficConfId Traffic configuration id
+     * @returns Selected sender id
+     */
     private getSelectedSender(trafficConfId: number): number {
         const selectId = TrafficController.SENDER_ID_BASE + trafficConfId.toString();
         return this.getSelectedValueById(selectId);
     }
 
+    /**
+     * Get selected receiver id
+     * 
+     * @param trafficConfId Traffic configuration id
+     * @returns Selected receiver id
+     */
     private getSelectedReceiver(trafficConfId: number): number {
         const selectId = TrafficController.RECEIVER_ID_BASE + trafficConfId.toString();
         return this.getSelectedValueById(selectId);
     }
 
+    /**
+     * Get selected packet size
+     * 
+     * @param trafficConfId Traffic configuration id
+     * @returns Selected packet size
+     */
     private getSelectedPacketSize(trafficConfId: number): number {
         const selectId = TrafficController.PACKET_SIZE_ID_BASE + trafficConfId.toString();
         return this.getSelectedValueById(selectId);
     }
-
+    /**
+     * Get selected interval
+     * 
+     * Interval is the time interval between two packets in milliseconds.
+     * 
+     * @param trafficConfId Traffic configuration id
+     * @returns Selected interval
+     */
     private getSelectedInterval(trafficConfId: number): number {
         const selectId = TrafficController.INTERVAL_ID_BASE + trafficConfId.toString();
         return this.getSelectedValueById(selectId);
     }
 
+    /**
+     * Create a container that contains packet size and interval selectors
+     * 
+     * @returns HTMLDivElement that contains the packet size, and interval selectors
+     */
     private createTrafficTraitSelectContainer(): HTMLDivElement {
         const container = createFlexContainer();
         container.style.width = '100%';
@@ -170,6 +249,11 @@ export class TrafficController {
         return container;
     }
 
+    /**
+     * Create a container that contains sender and receiver selectors
+     * 
+     * @returns HTMLDivElement that contains the sender and receiver selectors
+     */
     private createSenderReceiverSelectContainer(): HTMLDivElement {
         const container = createFlexContainer();
         container.style.width = '100%';
@@ -203,6 +287,11 @@ export class TrafficController {
         return container;
     }
 
+    /**
+     * Create a container that contains start/stop, update, and delete buttons
+     * 
+     * @returns HTMLDivElement that contains the start/stop, update, and delete buttons
+     */
     private createOneControllerButtonDiv(): HTMLDivElement {
         const buttonContainer = createFlexContainer();
         const trafficConfId = this.trafficConfIdCounter;
@@ -254,6 +343,15 @@ export class TrafficController {
         return buttonContainer;
     }
 
+    /**
+     * Create a selector with given options. Also creates a label for the selector.
+     * 
+     * @param text Label text
+     * @param options Options for the selector 
+     * @param selectIdBase Base id string for the selector 
+     * @param defaultIdx Default selected index
+     * @returns 
+     */
     private createSelector(text: string, options: HTMLOptionElement[], selectIdBase: string, defaultIdx = 0): HTMLDivElement {
         const container = createFlexContainer();
         container.style.width = '100%';
