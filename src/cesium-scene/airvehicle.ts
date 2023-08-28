@@ -11,6 +11,8 @@ import { CesiumScene } from './cesium-scene';
 import { Position } from './position';
 import DroneModelUri from '../static/Drone.glb';
 import { AirvehicleManager } from './airvehicle-manager';
+
+/* Extend Entity class to add onClick property */
 declare module "cesium" {
     interface Entity {
         onClick: () => void;
@@ -35,6 +37,10 @@ export interface RouteEntry {
     path: number[];
 }
 
+/**
+ * Manage airvehicle entity.
+ * Position can be updated by setting position property.
+ */
 export class Airvehicle {
     private readonly cesiumScene = CesiumScene.getInstance();
     private readonly airvehicleManager = AirvehicleManager.getInstance();
@@ -48,13 +54,12 @@ export class Airvehicle {
     public edgeNodeIdxList: number[] = [];
 
     constructor(options: AirvehicleOptions) {
-        console.log('Airvehicle constructor');
         if (options.position) {
             this.position = options.position;
         } else if (options.timedPositions) {
             this.position = options.timedPositions;
         } else {
-            console.log("Airvehicle constructor: position is not defined");
+            console.error("Airvehicle constructor: position is not defined");
             return null;
         }
 
@@ -90,8 +95,6 @@ export class Airvehicle {
             orientation = new VelocityOrientationProperty(posprop);
         }
 
-        console.log(position, orientation);
-
         this.entity = this.cesiumScene.viewer.entities.add({
             name: "AirVehicle",
             position: position,
@@ -120,6 +123,7 @@ export class Airvehicle {
         this.drawPositionIndicator();
     }
 
+    /** Draw line from airvehicle to ground */
     private drawPositionIndicator() {
         this.cesiumScene.viewer.entities.add({
             polyline: {
@@ -142,6 +146,11 @@ export class Airvehicle {
         });
     }
 
+    /**
+     * Return current position with current scenario time
+     * 
+     * @returns Current position of airvehicle
+     */
     public getCurrentPosition(): Position {
         if (this.position instanceof Position) {
             return this.position;
@@ -154,29 +163,14 @@ export class Airvehicle {
         }
     }
 
+    /**
+     * Update one route info to airvehicle
+     * 
+     * @param targetIdx Node index of target node
+     * @param path Path to target node
+     */
     public updateRoutingTable(targetIdx: number, path: RouteEntry) {
         this.routingTable[targetIdx] = path;
-        this.edgeNodeIdxList = this.getEdgeNodeIdxList(this.index);
-        console.log(this.edgeNodeIdxList);
-    }
-
-    private getEdgeNodeIdxList(rootNodeIdx: number): number[] {
-        const isIdxRelay = new Array(this.airvehicleManager.avList.length).fill(false);
-        const edgeNodeIdxList: number[] = [];
-        const node = this.airvehicleManager.avList[rootNodeIdx];
-        for (let i = 0; i < node.routingTable.length; i++) {
-            const routeEntry = node.routingTable[i];
-            for (let j = 0; j < routeEntry.hopCount - 1; j++) {
-                const relayIdx = routeEntry.path[j];
-                isIdxRelay[relayIdx] = true;
-            }
-        }
-
-        for (let i = 0; i < isIdxRelay.length; i++) {
-            if (!isIdxRelay[i])
-                edgeNodeIdxList.push(i);
-        }
-
-        return edgeNodeIdxList;
+        this.edgeNodeIdxList = this.airvehicleManager.calcEdgeNodeIdxList(this.index);
     }
 }

@@ -73,7 +73,7 @@ export class BackendConnection {
         this.setTrafficControllerCallbacks();
     }
 
-    /** Set callbacks for dummy traffic controll gui buttons */
+    /** Set callbacks for dummy traffic control gui buttons */
     private setTrafficControllerCallbacks() {
         this.trafficController.createCallback = (confId) => {
             console.log("Create callback");
