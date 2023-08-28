@@ -16,6 +16,10 @@ export interface RouteMsg {
     path: number[];
 }
 
+/**
+ * Perform TCP connection to backend simulation server
+ * Singleton class(Use getInstance() to get instance)
+ */
 export class BackendConnection {
     /* Singleton */
     private static instance: BackendConnection;
@@ -29,10 +33,12 @@ export class BackendConnection {
     private readonly airvehicleManager = AirvehicleManager.getInstance();
     private readonly trafficController = TrafficController.getInstance();
     private readonly jsonIo = new JsonIoClient();
-    public trxMsgHandler: (msg: TRxMsg) => void = (msg) => {
+
+    private trxMsgHandler: (msg: TRxMsg) => void = (msg) => {
         // console.log('No TRx handler', msg);
     };
-    public routeMsgHandler: (msg: RouteMsg) => void = (msg) => {
+
+    private routeMsgHandler: (msg: RouteMsg) => void = (msg) => {
         console.log(msg);
         const node = this.airvehicleManager.avList[msg.node];
         
@@ -44,8 +50,10 @@ export class BackendConnection {
         node.updateRoutingTable(msg.target, routeEntry);
     };
 
+    /** True if connected to backend simulation server */
     public isConnected = false;
 
+    /** Do not use this constructor. Use getInstance() instead */
     constructor() {
         this.jsonIo.onJsonRecv = (json) => {
             this.handleMsg(json);
@@ -65,6 +73,7 @@ export class BackendConnection {
         this.setTrafficControllerCallbacks();
     }
 
+    /** Set callbacks for dummy traffic controll gui buttons */
     private setTrafficControllerCallbacks() {
         this.trafficController.createCallback = (confId) => {
             console.log("Create callback");
@@ -111,6 +120,7 @@ export class BackendConnection {
         };
     }
 
+    /** Handle message from backend simulation server */
     private handleMsg(msg: object) {
         if (Object.prototype.hasOwnProperty.call(msg, "type")) {
             const typed = msg as { type: string };
@@ -130,6 +140,7 @@ export class BackendConnection {
         }
     }
 
+    /** Send strat message to backend simulation server */
     public sendStart(nodeNum: number) {
         this.jsonIo.sendJsonTcp({
             type: "Start",
@@ -137,18 +148,21 @@ export class BackendConnection {
         });
     }
 
+    /** Send stop message to backend simulation server */
     public sendStop() {
         this.jsonIo.sendJsonTcp({
             type: "Stop"
         });
     }
     
+    /** Periodically send link state message to backend simulation server(1s) */
     private async startPeriodicNodeLinkStateSend() {
         setInterval(() => {
             this.sendNodeLinkState();
         }, 1000);
     }
 
+    /** Send link state message to backend simulation server */
     private sendNodeLinkState() {
         const nodenum = this.airvehicleManager.avList.length;
         const nodeLinkInfo: number[][] = [];
@@ -172,6 +186,7 @@ export class BackendConnection {
         this.jsonIo.sendJsonTcp(json);
     }
 
+    /** Periodically send heartbeat message to backend simulation server(1s) */
     private async startHeartbeat() {
         // eslint-disable-next-line no-constant-condition
         while (true) {
