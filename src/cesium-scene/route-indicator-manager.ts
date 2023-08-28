@@ -31,9 +31,11 @@ class RouteIndicator {
                         const route = rtt[this.target.index];
                         if (!route || route.path.length < 1)
                             return RouteIndicator.dummyLinePositions;
-                        
+
                         /* Draw only if the target is an edge node */
-                        if (!this.originator.edgeNodeIdxList.includes(this.target.index))
+                        const originatorEdgeNodeIdxList
+                            = this.airvehicleManager.calcEdgeNodeIdxList(this.originator.index);
+                        if (!originatorEdgeNodeIdxList.includes(this.target.index))
                             return RouteIndicator.dummyLinePositions;
 
                         const originatorPos = this.originator.getCurrentPosition();
@@ -44,7 +46,7 @@ class RouteIndicator {
                         const path = [originatorPos.cartesianPos, ...route.path.map((val) => {
                             const intermediateAv = this.airvehicleManager.avList[val];
                             const intermediateAvPos = intermediateAv.getCurrentPosition();
-                            if (!intermediateAvPos){
+                            if (!intermediateAvPos) {
                                 posfail = true;
                                 return RouteIndicator.dummyCart3;
                             }
@@ -58,7 +60,7 @@ class RouteIndicator {
                             times: path.map((r, idx) => idx),
                             points: path
                         });
-                
+
                         const linePosArr = [];
                         for (let i = 0.0; i < path.length - 1.05; i += 0.1)
                             linePosArr.push(spline.evaluate(i));

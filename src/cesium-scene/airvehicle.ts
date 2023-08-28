@@ -44,27 +44,35 @@ export interface RouteEntry {
 export class Airvehicle {
     private readonly cesiumScene = CesiumScene.getInstance();
     private readonly airvehicleManager = AirvehicleManager.getInstance();
+    
     public position: Position | TimedPosition[];
+    
+    /** Cesium entity of airvehicle */
     public entity: Entity;
+
+    /** Label name of airvehicle */
     public name = "AirVehicle";
+
+    /** Used when position is type of Position */
     public heading = 0;
+
+    /** Node index that unique in this scenario */
     public index = 0;
 
+    /** Routing table of this node */
     public routingTable: RouteEntry[] = [];
-    public edgeNodeIdxList: number[] = [];
 
     constructor(options: AirvehicleOptions) {
         if (options.position) {
             this.position = options.position;
+            if (options.heading)
+                this.heading = options.heading;
         } else if (options.timedPositions) {
             this.position = options.timedPositions;
         } else {
             console.error("Airvehicle constructor: position is not defined");
             return null;
         }
-
-        if (options.heading)
-            this.heading = options.heading;
 
         if (options.name)
             this.name = options.name;
@@ -161,16 +169,5 @@ export class Airvehicle {
             else
                 return null;
         }
-    }
-
-    /**
-     * Update one route info to airvehicle
-     * 
-     * @param targetIdx Node index of target node
-     * @param path Path to target node
-     */
-    public updateRoutingTable(targetIdx: number, path: RouteEntry) {
-        this.routingTable[targetIdx] = path;
-        this.edgeNodeIdxList = this.airvehicleManager.calcEdgeNodeIdxList(this.index);
     }
 }
