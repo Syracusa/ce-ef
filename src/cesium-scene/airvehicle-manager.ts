@@ -25,24 +25,4 @@ export class AirvehicleManager {
             this.routeIndicatorManager.addRouteIndicator(this.avList[i], airvehicle);
         }
     }
-
-    public calcEdgeNodeIdxList(rootNodeIdx: number): number[] {
-        const isIdxRelay = new Array(this.avList.length).fill(false);
-        const edgeNodeIdxList: number[] = [];
-        const node = this.avList[rootNodeIdx];
-        for (let i = 0; i < node.routingTable.length; i++) {
-            const routeEntry = node.routingTable[i];
-            for (let j = 0; j < routeEntry.hopCount - 1; j++) {
-                const relayIdx = routeEntry.path[j];
-                isIdxRelay[relayIdx] = true;
-            }
-        }
-
-        for (let i = 0; i < isIdxRelay.length; i++) {
-            if (!isIdxRelay[i])
-                edgeNodeIdxList.push(i);
-        }
-
-        return edgeNodeIdxList;
-    }
 }
