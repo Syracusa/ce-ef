@@ -46,8 +46,8 @@ export class BackendConnection {
             hopCount: msg.hopcount,
             path: msg.path
         }; 
-
-        node.routingTable[msg.target] = routeEntry;
+        
+        node.updateRoutingTable(msg.target, routeEntry);
     };
 
     /** True if connected to backend simulation server */
